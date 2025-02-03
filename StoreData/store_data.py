@@ -1,6 +1,22 @@
 import subprocess
 import time
 
+create_database_query = """
+CREATE DATABASE IF NOT EXISTS wordpress;
+"""
+
+create_table_query = """
+CREATE TABLE IF NOT EXISTS users (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100)
+);
+"""
+
+insert_data_query = """
+INSERT INTO users (id, name) 
+VALUES (1, 'SQLUser');
+"""
+
 def run_command(command):
     
     process = subprocess.run(command, shell=True, capture_output=True, text=True)
@@ -32,13 +48,16 @@ print(f"In-memory container ID: {inmemory_container[1:-1]}")
 time.sleep(10)
 
 if wordpress_db_container:
-    sql_query = "INSERT INTO test_table (id, name) VALUES (1, 'TestUser');"
-    mysql_command = f"docker exec {wordpress_db_container[1:-1]} mysql -u root -pwordpress -D wordpress -e \"{sql_query}\""
+    mysql_create__database_command = f"docker exec {wordpress_db_container[1:-1]} mysql -u root -pwordpress -e \"{create_database_query}\""
+    run_command(mysql_create__database_command)
+    mysql_insert_command = f"docker exec {wordpress_db_container[1:-1]} mysql -u root -pwordpress -D wordpress -e \"{insert_data_query}\""
     print("Inserting data into Wordpress database...")
-    run_command(mysql_command)
+    run_command(mysql_insert_command)
     
 if sql_container:
-    sql_insert_command = f"docker exec {sql_container[1:-1]} psql -U user -d mydatabase -c \"INSERT INTO users (id, name) VALUES (1, 'SQLUser');\""
+    sql_create_command = f"docker exec {sql_container[1:-1]} psql -U user -d mydatabase -c \"{create_table_query}\""
+    run_command(sql_create_command)
+    sql_insert_command = f"docker exec {sql_container[1:-1]} psql -U user -d mydatabase -c \"{insert_data_query}\""
     print("Inserting data into SQL database...")
     run_command(sql_insert_command)
     
