@@ -1,6 +1,9 @@
 import subprocess
 import time
 
+"""Apart from MongoDB, the other databases worked successfully. I have tried to create database with db.create_collection
+query but it still gave an error."""
+
 create_database_query = """
 CREATE DATABASE IF NOT EXISTS wordpress;
 """
